@@ -16,8 +16,8 @@ module.exports = function (grunt) {
         },
         typescript: {
             base: {
-                src: ['lib/**/*.ts'],
-                dest: 'js/PixelVisionJSDemos.js',
+                src: ['ts/*.ts'],
+                dest: 'js/main.js',
                 options: {
                     module: 'amd',
                     target: 'es5'
