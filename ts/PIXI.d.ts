@@ -1,173 +1,242 @@
-module PIXI {
-    export class PxEventTarget implements EventTarget {
-        public addEventListener();
-        public removeEventListener();
-        public dispatchEvent(evt:Event):bool;
+/**
+ *
+ * Typescript declaration file for pixi.js framework
+ * User: xperiments
+ * Date: 14/03/13
+ */
+
+
+declare module PIXI
+{
+    export var BaseTextureCache:any;
+    export var texturesToUpdate:PIXI.BaseTexture[];
+    export var TextureCache:any;
+
+    export function autoDetectRenderer( width:number, height:number ):PIXI.IRenderer;
+
+    export class AssetLoader extends EventTarget
+    {
+        assetURLs:string[];
+
+        constructor( assetURLs:string[] );
+
+        public onComplete:()=>void;
+        public onProgress:()=>void;
+        public load:()=>void;
     }
 
-    export class AssetLoader extends PxEventTarget {
-        public assetURLs:string[];
-
-        constructor(assetURLs:string[]);
+    export class BaseTexture extends EventTarget
+    {
+        height:number;
+        width:number;
+        source:string;
+        constructor( source:any );
     }
 
-    export class BaseTexture extends PxEventTarget{
-        public height:number;
-        public width:number;
-        public source:HTMLImageElement;
+    export class CanvasRenderer implements IRenderer
+    {
+        context:CanvasRenderingContext2D;
+        height:number;
+        view:HTMLCanvasElement;
+        width:number;
 
-        constructor(source:string);
+        constructor( width:number, height:number );
+        render( stage:Stage ):void;
     }
 
-    export class CanvasRenderer {
-        public context:CanvasRenderingContext2D;
-        public height:number;
-        public width:number;
-        public view:HTMLCanvasElement;
 
-        constructor(width:number, height:number, view?:HTMLCanvasElement, transparent?:bool);
+    export class DisplayObject
+    {
 
-        public render(stage:Stage);
+        alpha:number;
+        parent:DisplayObjectContainer;
+        position:Point;
+        rotation:number;
+        scale:Point;
+        stage:Stage;
+        visible:bool;
+
+        updateTransform():void;
+
     }
 
-    export class DisplayObject {
-        public alpha:number;
-        public parent:DisplayObjectContainer;
-        public position:Point;
-        public rotation:number;
-        public scale:Point;
-        public stage:Stage;
 
-        public static autoDetectRenderer(width:number, height:number, view:HTMLCanvasElement, transparent:bool);
+    export class DisplayObjectContainer extends DisplayObject
+    {
+        children:DisplayObject[];
+        parent:DisplayObjectContainer;
+
+        addChild( child:DisplayObject ):void;
+        addChildAt ( child:DisplayObject, index:number ):void;
+        removeChild( child:DisplayObject ):void;
     }
 
-    export class DisplayObjectContainer extends DisplayObject{
-        public children:DisplayObject[];
-
-        public addChild(child:DisplayObject);
-        public addChildAt(child:DisplayObject, index:number);
-        public removeChild(child:DisplayObject);
+    export class InteractionData
+    {
+        global:Point;
+        local:Point;
+        //target:Sprite;
     }
 
-    export class InteractionData {
-        public global:Point;
-        public local:Point;
-        public target:Sprite;
+    export class InteractionManager
+    {
+        mouse:InteractionData;
+        stage:Stage;
+        touchs:InteractionData[];
+
+        disableMouseOver ():void;
+        enableMouseOver ():void;
     }
 
-    export class InteractionManager {
-        public mouse:InteractionData;
-        public stage:Stage;
-        public touchs:Object;
-
-        constructor(stage:Stage);
-
-        public disableMouseOver();
-        public enableMouseOver();
+    interface IEvent
+    {
+        type:string;
     }
 
-    export class MovieClip extends Sprite {
-        public animationSpeed:number;
-        public currentFrame:number;
-        public playing:bool;
-        public textures:Texture[];
+    export class EventTarget {
 
-        constructor(textures:Texture[]);
-
-        public gotoAndPlay(frameNumber:number);
-        public gotoAndStop(frameNumber:number);
-        public play();
-        public stop();
+        addEventListener( type:string, listener:( event:IEvent )=>void );
+        removeEventListener( type:string, listener:( event:IEvent )=>void );
+        dispatchEvent( event:IEvent );
     }
 
-    export class Point {
-        public x:number;
-        public y:number;
+    export class MovieClip extends DisplayObject
+    {
+        animationSpeed:number;
+        currentFrame:number;
+        playing:bool;
+        textures:Texture[];
+        position:Point;
+        anchor:Point;
 
-        constructor(x:number, y:number);
+        constructor( textures:Texture[] );
 
-        public clone():Point;
+        gotoAndPlay ( frameNumber:number ):void;
+        gotoAndStop ( frameNumber:number ):void;
+        play ():void;
+        stop ():void;
+
     }
 
-    export class Rectangle {
-        public x:number;
-        public y:number;
-        public width:number;
-        public height:number;
+    export class Point
+    {
+        x:number;
+        y:number;
 
-        constructor(x:number, y:number, width:number, height:number);
-
-        public clone():Rectangle;
+        constructor( x:number, y:number );
+        clone():Point;
     }
 
-    export class Sprite extends DisplayObjectContainer{
-        public anchor:Point;
-        public blendMode:number;
-        public height:number;
-        public width:number;
-        public texture:Texture;
+    export interface IRectangle
+    {
+        x:number;
+        y:number;
+        width:number;
+        height:number;
+    }
+    export class Rectangle implements IRectangle
+    {
+        x:number;
+        y:number;
+        width:number;
+        height:number;
 
-        constructor(t:Texture);
-
-        public static fromFrame(frameId:string);
-        public static fromImage(imgName:string);
-
-        public click(e:InteractionData);
-        public mousedown(e:InteractionData);
-        public mouseout(e:InteractionData);
-        public mouseover(e:InteractionData);
-        public mouseup(e:InteractionData);
-        public tap(e:InteractionData);
-        public touchstart(e:InteractionData);
-        public touchend(e:InteractionData);
-        public setInteractive(interactive:bool);
-        public setTexture(texture:Texture);
+        constructor(x:number,y:number, width:number, height:number );
+        clone():Rectangle;
     }
 
-    export class SpriteSheetLoader extends PxEventTarget {
-        constructor(url:string);
+    export class Sprite extends DisplayObjectContainer
+    {
+        anchor:Point;
+        blendMode:number;
+        height:number;
+        texture:Texture;
+        width:number;
+        position:Point;
+        static fromFrame( frameId:string ):Sprite;
+        static fromImage( imageId:string ):Sprite;
+
+
+
+        constructor( texture:Texture );
+        setTexture( texture:Texture ):void;
+        setInteractive( interactive: bool ):void;
+
+        mouseover:( event:InteractionData )=>void;
+        mouseout:( event:InteractionData )=>void;
+        mousedown:( event:InteractionData )=>void;
+        mouseup:( event:InteractionData )=>void;
+        click:( event:InteractionData )=>void;
+        touchstart:( event:InteractionData  )=>void;
+        touchend:( event:InteractionData )=>void;
+        tap:( event:InteractionData )=>void;
+
     }
 
-    export class Stage extends DisplayObjectContainer{
-        constructor(backgroundColor?:number, interactive?:bool);
 
-        public setBackgroundColor(backgroundColor:number);
-        public updateTransform();
+
+    export class SpriteSheetLoader extends EventTarget
+    {
+        constructor( url:string );
+        public onComplete:()=>void;
+        load():void;
+    }
+    export class Stage extends DisplayObjectContainer
+    {
+        constructor( backgroundColor?:number, interactive?:bool );
+        setBackgroundColor( backgroundColor:number ):void;
+        updateTransform():void;
     }
 
-    export class Texture extends PxEventTarget {
-        public baseTexture;
-        public frame;
+    export class Texture extends EventTarget
+    {
+        baseTexture:BaseTexture;
+        frame:Rectangle;
 
-        constructor(baseTexture:BaseTexture, frame:Rectangle);
+        static addTextureToCache( texture:Texture , id:string ):void;
+        static fromCanvas( canvas:HTMLCanvasElement ):Texture;
+        static fromCustomCanvas( canvas:HTMLCanvasElement ):Texture;
 
-        public static fromCanvas(canvas:HTMLCanvasElement);
-        public static fromImage(imageUrl:string);
+        static fromFrame( frameId:string ):Texture;
+        static fromImage( imageUrl:string , crossorigin?:bool):Texture;
+        static removeTextureFromCache( id:any ):Texture;
 
-        public addTexturetoCache(texture:Texture, id:string);
-        public fromFrame(frameId:string);
-        public removeTextureFromCache(id:string);
-        public setFrame(frame:Rectangle);
+        setFrame( frame:Rectangle ):void;
+
+        constructor( baseTexture:BaseTexture, frame?:Rectangle );
+
     }
 
-    export class WebGLBatch {
-        public init(sprite:Sprite);
-        public insertAfter(sprite:Sprite, previousSprite:Sprite);
-        public insertBefore(sprite:Sprite, nextSprite:Sprite);
-        public merge(batch:WebGLBatch);
-        public refresh();
-        public remove(sprite:Sprite);
-        public render();
-        public split(sprite:Sprite):WebGLBatch;
-        public update();
+    export class WebGLBatch
+    {
+        init( sprite:Sprite ):void;
+        insertAfter( sprite:Sprite,  previousSprite:Sprite ):void;
+        insertBefore( sprite:Sprite,  nextSprite:Sprite ):void;
+        merge( batch:WebGLBatch ):void;
+        refresh():void;
+        remove( sprite:Sprite ):void;
+        render( ):void;
+        split( sprite:Sprite ):WebGLBatch;
+        update():void;
     }
 
-    export class WebGLRenderer {
-        public view:HTMLCanvasElement;
+    export class WebGLRenderer implements IRenderer
+    {
 
-        constructor(width:number, height:number, view?:HTMLCanvasElement, transparent?:bool);
-
-        public render(stage:Stage);
-        public resize(width:number, height:number);
+        view:HTMLCanvasElement;
+        constructor(width:number, height:number);
+        render( stage:Stage ):void;
+        resize( width:number, height:number ):void;
     }
+
+    export interface IRenderer
+    {
+        view:HTMLCanvasElement;
+        render( stage:Stage ):void;
+    }
+
+
 }
+
+declare function requestAnimFrame( animate:()=>void );
+
