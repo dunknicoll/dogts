@@ -1,5 +1,6 @@
-/// <reference path="PIXI.d.ts"/>
-/// <reference path="dog.ts"/>
+/// <reference path="PIXI.d"/>
+/// <reference path="keyboard" />
+/// <reference path="dog"/>
 
 var requestAnimFrame: (callback: () => void) => void = (function(){ 
   return window.requestAnimationFrame || 
@@ -16,29 +17,34 @@ class Annyeong {
 
 	renderer 	:	any;
 	stage 		:	any;
+
 	dog 		:	Dog;
+
+	kbHandler	: 	KeyboardHandler;
 
 	constructor()
 	{
-	  // You can use either PIXI.WebGLRenderer or PIXI.CanvasRenderer
+		this.kbHandler 			= new KeyboardHandler( window );
+		this.kbHandler.capture 	= true;
+
 	    this.renderer = new PIXI.WebGLRenderer(800, 600); 
 
-	    document.body.appendChild(this.renderer.view);
-
 	    this.stage = new PIXI.Stage;
+	    this.dog = new Dog(this.stage,this.kbHandler,50,50);
 
-	    this.dog = new Dog(this.stage, 50,50);
+	    //this.kbHandler.slowKey( 39, this.moveDogRight.bind(this) );
+	    //this.kbHandler.slowKey( 37, this.moveDogLeft.bind(this) );
 
+	    document.body.appendChild(this.renderer.view);
 	    this.tick();
 	};
 
 	tick()
 	{
 		this.renderer.render(this.stage);
-
+		this.dog.update();
         requestAnimationFrame( this.tick.bind(this) );
 	};
-
 }
 
 var game = new Annyeong;

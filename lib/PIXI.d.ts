@@ -105,6 +105,7 @@ declare module PIXI
         animationSpeed:number;
         currentFrame:number;
         playing:bool;
+        loop:bool;
         textures:Texture[];
         position:Point;
         anchor:Point;
