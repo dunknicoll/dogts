@@ -29,8 +29,18 @@ class Annyeong {
 
 	    this.renderer = new PIXI.WebGLRenderer(800, 600); 
 
+	    var graphics = new PIXI.Graphics();
+
+	    graphics.beginFill("0x00FF00");
+	    graphics.moveTo(100,150);
+	    graphics.lineTo(400, 150);
+	    graphics.lineTo(400, 200);
+	    graphics.lineTo(100, 200);
+	    graphics.endFill();
+
 	    this.stage = new PIXI.Stage;
 	    this.dog = new Dog(this.stage,this.kbHandler,50,50);
+	    this.stage.addChild(graphics);
 
 	    //this.kbHandler.slowKey( 39, this.moveDogRight.bind(this) );
 	    //this.kbHandler.slowKey( 37, this.moveDogLeft.bind(this) );

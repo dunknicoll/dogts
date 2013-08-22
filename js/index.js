@@ -232,8 +232,16 @@ var Annyeong = (function () {
         this.kbHandler = new KeyboardHandler(window);
         this.kbHandler.capture = true;
         this.renderer = new PIXI.WebGLRenderer(800, 600);
+        var graphics = new PIXI.Graphics();
+        graphics.beginFill("0x00FF00");
+        graphics.moveTo(100, 150);
+        graphics.lineTo(400, 150);
+        graphics.lineTo(400, 200);
+        graphics.lineTo(100, 200);
+        graphics.endFill();
         this.stage = new PIXI.Stage();
         this.dog = new Dog(this.stage, this.kbHandler, 50, 50);
+        this.stage.addChild(graphics);
         document.body.appendChild(this.renderer.view);
         this.tick();
     }
