@@ -60,7 +60,7 @@ class Dog
 
 	};
 
-	update()
+	update(dist:number)
 	{
 		if( this.kbHandler.key(39) )
 		{
@@ -69,6 +69,8 @@ class Dog
 				this.sprite.scale.x = 5;
 			}
 			this.sprite.position.x+=7;
+			this.x = this.sprite.position.x;
+			this.y = this.sprite.position.y;
 			if( this.sprite.textures != this.anWalk )
 			{
 				this.sprite.textures = this.anWalk;
@@ -82,11 +84,25 @@ class Dog
 				this.sprite.scale.x = -5;
 			}
 			this.sprite.position.x-=7;
+			this.x = this.sprite.position.x;
+			this.y = this.sprite.position.y;
 			if( this.sprite.textures != this.anWalk )
 			{
 				this.sprite.textures = this.anWalk;
 			}
 			this.stateCounter = this.resetCounter;
+		}
+		else if( this.kbHandler.key(38) )
+		{
+			this.sprite.position.y-=7;
+			this.x = this.sprite.position.x;
+			this.y = this.sprite.position.y;
+		}
+		else if( this.kbHandler.key(40) )
+		{
+			this.sprite.position.y+=7;
+			this.x = this.sprite.position.x;
+			this.y = this.sprite.position.y;
 		}
 		else
 		{
@@ -115,6 +131,12 @@ class Dog
 				}
 			}
 		}
+
+/*		if(dist > 24 && this.sprite != undefined)
+		{
+			this.sprite.position.y+=5;
+			this.y = this.sprite.position.y;
+		}*/
 	};
 
 	addAnimation(frames:number[],base:string)

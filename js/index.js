@@ -172,12 +172,14 @@ var Dog = (function () {
         this.sprite.play();
         this.stage.addChild(this.sprite);
     };
-    Dog.prototype.update = function () {
+    Dog.prototype.update = function (dist) {
         if(this.kbHandler.key(39)) {
             if(this.sprite.scale.x != 5) {
                 this.sprite.scale.x = 5;
             }
             this.sprite.position.x += 7;
+            this.x = this.sprite.position.x;
+            this.y = this.sprite.position.y;
             if(this.sprite.textures != this.anWalk) {
                 this.sprite.textures = this.anWalk;
             }
@@ -187,10 +189,20 @@ var Dog = (function () {
                 this.sprite.scale.x = -5;
             }
             this.sprite.position.x -= 7;
+            this.x = this.sprite.position.x;
+            this.y = this.sprite.position.y;
             if(this.sprite.textures != this.anWalk) {
                 this.sprite.textures = this.anWalk;
             }
             this.stateCounter = this.resetCounter;
+        } else if(this.kbHandler.key(38)) {
+            this.sprite.position.y -= 7;
+            this.x = this.sprite.position.x;
+            this.y = this.sprite.position.y;
+        } else if(this.kbHandler.key(40)) {
+            this.sprite.position.y += 7;
+            this.x = this.sprite.position.x;
+            this.y = this.sprite.position.y;
         } else {
             if(this.stateCounter == 0) {
                 this.stateCounter = 0;
@@ -222,6 +234,27 @@ var Dog = (function () {
     return Dog;
 })();
 ;
+var DPoly = (function () {
+    function DPoly(pnts, colr) {
+        if (typeof colr === "undefined") { colr = "0xFF0000"; }
+        this.points = pnts;
+        this.color = colr;
+        var graphics = new PIXI.Graphics();
+        graphics.beginFill(this.color);
+        var p1 = this.points.shift();
+        var p2 = this.points.shift();
+        graphics.moveTo(p1, p2);
+        var pointer = 2;
+        for(var i = 0; i < this.points.length / 2; i++) {
+            var px = this.points[2 * i];
+            var py = this.points[2 * i + 1];
+            graphics.lineTo(px, py);
+        }
+        graphics.endFill();
+        return graphics;
+    }
+    return DPoly;
+})();
 var requestAnimFrame = (function () {
     return window.requestAnimationFrame || (window).webkitRequestAnimationFrame || (window).mozRequestAnimationFrame || (window).oRequestAnimationFrame || window.msRequestAnimationFrame || function (callback) {
         window.setTimeout(callback, 1000 / 60, new Date().getTime());
@@ -232,22 +265,58 @@ var Annyeong = (function () {
         this.kbHandler = new KeyboardHandler(window);
         this.kbHandler.capture = true;
         this.renderer = new PIXI.WebGLRenderer(800, 600);
-        var graphics = new PIXI.Graphics();
-        graphics.beginFill("0x00FF00");
-        graphics.moveTo(100, 150);
-        graphics.lineTo(400, 150);
-        graphics.lineTo(400, 200);
-        graphics.lineTo(100, 200);
-        graphics.endFill();
+        this.poly = [
+            50, 
+            362, 
+            213, 
+            342, 
+            421, 
+            284, 
+            536, 
+            272, 
+            659, 
+            272, 
+            772, 
+            280, 
+            886, 
+            342, 
+            963, 
+            394, 
+            963, 
+            430, 
+            55, 
+            430, 
+            50, 
+            362
+        ];
+        this.platform = new DPoly(this.poly, "0x0000FF");
         this.stage = new PIXI.Stage();
         this.dog = new Dog(this.stage, this.kbHandler, 50, 50);
-        this.stage.addChild(graphics);
+        this.stage.addChild(this.platform);
+        this.isc = new PolyK.ClosestEdge(this.poly, this.dog.x, this.dog.y);
+        this.marker = new PIXI.Graphics();
+        this.stage.addChild(this.marker);
         document.body.appendChild(this.renderer.view);
         this.tick();
     }
     Annyeong.prototype.tick = function () {
         this.renderer.render(this.stage);
-        this.dog.update();
+        this.isc = new PolyK.ClosestEdge(this.poly, this.dog.x, this.dog.y);
+        this.marker.clear();
+        this.marker.beginFill("0xFF0000");
+        this.marker.lineStyle(3, 0xFF0000);
+        if(this.isc.edge << 1 == this.poly.length - 2) {
+            this.marker.moveTo(this.poly[this.isc.edge * 2 + 0], this.poly[this.isc.edge * 2 + 1]);
+            this.marker.lineTo(this.poly[0], this.poly[1]);
+        } else {
+            this.marker.moveTo(this.poly[this.isc.edge * 2 + 0], this.poly[this.isc.edge * 2 + 1]);
+            this.marker.lineTo(this.poly[this.isc.edge * 2 + 2], this.poly[this.isc.edge * 2 + 3]);
+        }
+        this.dog.update(this.isc.dist);
+        this.marker.lineStyle(3, 0xFF0000);
+        this.marker.moveTo(this.dog.x, this.dog.y);
+        this.marker.lineTo(this.isc.point.x, this.isc.point.y);
+        this.marker.endFill();
         requestAnimationFrame(this.tick.bind(this));
     };
     return Annyeong;
