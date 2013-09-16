@@ -110,6 +110,7 @@ var Dog = (function () {
             "../atlases/pixdog.json"
         ]);
         this.loader.onComplete = this.onAtlasLoaded.bind(this);
+        this.loaded = false;
         this.loader.load();
         this.x = x;
         this.y = y;
@@ -171,54 +172,65 @@ var Dog = (function () {
         this.sprite.animationSpeed = 0.1;
         this.sprite.play();
         this.stage.addChild(this.sprite);
+        this.loaded = true;
     };
-    Dog.prototype.update = function (dist) {
-        if(this.kbHandler.key(39)) {
-            if(this.sprite.scale.x != 5) {
-                this.sprite.scale.x = 5;
+    Dog.prototype.update = function (isc) {
+        if(this.loaded) {
+            var angle = Math.atan(isc.norm.y / isc.norm.x);
+            angle -= 1.57;
+            if(angle <= -1.57) {
+                angle -= 3.14;
             }
-            this.sprite.position.x += 7;
-            this.x = this.sprite.position.x;
-            this.y = this.sprite.position.y;
-            if(this.sprite.textures != this.anWalk) {
-                this.sprite.textures = this.anWalk;
+            this.sprite.rotation = angle;
+            console.log(this.sprite.rotation);
+            if(this.kbHandler.key(40)) {
+                this.sprite.position.y += 7;
+                this.x = this.sprite.position.x;
+                this.y = this.sprite.position.y;
+            } else if(this.kbHandler.key(38)) {
+                this.sprite.position.y -= 7;
+                this.x = this.sprite.position.x;
+                this.y = this.sprite.position.y;
             }
-            this.stateCounter = this.resetCounter;
-        } else if(this.kbHandler.key(37)) {
-            if(this.sprite.scale.x != -5) {
-                this.sprite.scale.x = -5;
-            }
-            this.sprite.position.x -= 7;
-            this.x = this.sprite.position.x;
-            this.y = this.sprite.position.y;
-            if(this.sprite.textures != this.anWalk) {
-                this.sprite.textures = this.anWalk;
-            }
-            this.stateCounter = this.resetCounter;
-        } else if(this.kbHandler.key(38)) {
-            this.sprite.position.y -= 7;
-            this.x = this.sprite.position.x;
-            this.y = this.sprite.position.y;
-        } else if(this.kbHandler.key(40)) {
-            this.sprite.position.y += 7;
-            this.x = this.sprite.position.x;
-            this.y = this.sprite.position.y;
-        } else {
-            if(this.stateCounter == 0) {
-                this.stateCounter = 0;
-                if(this.sprite && this.sprite.textures != this.anSit) {
-                    this.sprite.textures = this.anMidSit;
-                    this.sprite.loop = false;
-                    if(!this.sprite.playing) {
-                        this.sprite.textures = this.anSit;
-                        this.sprite.loop = true;
-                        this.sprite.play();
-                    }
+            if(this.kbHandler.key(39)) {
+                if(this.sprite.scale.x != 5) {
+                    this.sprite.scale.x = 5;
                 }
+                this.sprite.position.x += 7;
+                this.x = this.sprite.position.x;
+                this.y = this.sprite.position.y;
+                if(this.sprite.textures != this.anWalk) {
+                    this.sprite.textures = this.anWalk;
+                }
+                this.stateCounter = this.resetCounter;
+            } else if(this.kbHandler.key(37)) {
+                if(this.sprite.scale.x != -5) {
+                    this.sprite.scale.x = -5;
+                }
+                this.sprite.position.x -= 7;
+                this.x = this.sprite.position.x;
+                this.y = this.sprite.position.y;
+                if(this.sprite.textures != this.anWalk) {
+                    this.sprite.textures = this.anWalk;
+                }
+                this.stateCounter = this.resetCounter;
             } else {
-                this.stateCounter--;
-                if(this.sprite && this.sprite.textures != this.anStand) {
-                    this.sprite.textures = this.anStand;
+                if(this.stateCounter == 0) {
+                    this.stateCounter = 0;
+                    if(this.sprite && this.sprite.textures != this.anSit) {
+                        this.sprite.textures = this.anMidSit;
+                        this.sprite.loop = false;
+                        if(!this.sprite.playing) {
+                            this.sprite.textures = this.anSit;
+                            this.sprite.loop = true;
+                            this.sprite.play();
+                        }
+                    }
+                } else {
+                    this.stateCounter--;
+                    if(this.sprite && this.sprite.textures != this.anStand) {
+                        this.sprite.textures = this.anStand;
+                    }
                 }
             }
         }
@@ -312,7 +324,7 @@ var Annyeong = (function () {
             this.marker.moveTo(this.poly[this.isc.edge * 2 + 0], this.poly[this.isc.edge * 2 + 1]);
             this.marker.lineTo(this.poly[this.isc.edge * 2 + 2], this.poly[this.isc.edge * 2 + 3]);
         }
-        this.dog.update(this.isc.dist);
+        this.dog.update(this.isc);
         this.marker.lineStyle(3, 0xFF0000);
         this.marker.moveTo(this.dog.x, this.dog.y);
         this.marker.lineTo(this.isc.point.x, this.isc.point.y);

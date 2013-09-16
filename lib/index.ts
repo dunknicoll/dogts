@@ -77,7 +77,7 @@ class Annyeong {
 			this.marker.lineTo(this.poly[this.isc.edge*2+2], this.poly[this.isc.edge*2+3]);
 		}
 
-		this.dog.update(this.isc.dist);
+		this.dog.update(this.isc);
 		
 		this.marker.lineStyle(3, 0xFF0000);
 		this.marker.moveTo(this.dog.x, this.dog.y);

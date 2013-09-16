@@ -17,6 +17,7 @@ class Dog
 	kbHandler	: 	KeyboardHandler;
 	stateCounter:	number;
 	resetCounter:	number;
+	loaded      :   bool;
 
 	constructor( stage:PIXI.Stage, kbHandler:KeyboardHandler, x:number = 0, y:number = 0)
 	{
@@ -30,6 +31,7 @@ class Dog
 		this.loader = new PIXI.AssetLoader(["../atlases/pixdog.json"]);
 
 		this.loader.onComplete = this.onAtlasLoaded.bind(this);
+		this.loaded = false;
 
 		this.loader.load();
 
@@ -58,85 +60,100 @@ class Dog
 
 		this.stage.addChild(this.sprite);
 
+		this.loaded = true;
+
 	};
 
-	update(dist:number)
+	update(isc:any)
 	{
-		if( this.kbHandler.key(39) )
+		if( this.loaded )
 		{
-			if( this.sprite.scale.x != 5 )
+			var angle = Math.atan(isc.norm.y/isc.norm.x);
+			angle -= 1.57;
+			if( angle <= -1.57 )
 			{
-				this.sprite.scale.x = 5;
+				angle -= 3.14;
 			}
-			this.sprite.position.x+=7;
-			this.x = this.sprite.position.x;
-			this.y = this.sprite.position.y;
-			if( this.sprite.textures != this.anWalk )
-			{
-				this.sprite.textures = this.anWalk;
-			}
-			this.stateCounter = this.resetCounter;
-		} 
-		else if( this.kbHandler.key(37) )
-		{
-			if( this.sprite.scale.x != -5 )
-			{
-				this.sprite.scale.x = -5;
-			}
-			this.sprite.position.x-=7;
-			this.x = this.sprite.position.x;
-			this.y = this.sprite.position.y;
-			if( this.sprite.textures != this.anWalk )
-			{
-				this.sprite.textures = this.anWalk;
-			}
-			this.stateCounter = this.resetCounter;
-		}
-		else if( this.kbHandler.key(38) )
-		{
-			this.sprite.position.y-=7;
-			this.x = this.sprite.position.x;
-			this.y = this.sprite.position.y;
-		}
-		else if( this.kbHandler.key(40) )
-		{
-			this.sprite.position.y+=7;
-			this.x = this.sprite.position.x;
-			this.y = this.sprite.position.y;
-		}
-		else
-		{
-			if( this.stateCounter == 0 )
-			{
-				this.stateCounter = 0;
-				if( this.sprite && this.sprite.textures != this.anSit )
-				{
-					this.sprite.textures = this.anMidSit;
-					this.sprite.loop = false;
+			this.sprite.rotation = angle;
+			console.log(this.sprite.rotation);
 
-					if( !this.sprite.playing )
-					{
-						this.sprite.textures = this.anSit;
-						this.sprite.loop = true;
-						this.sprite.play();
-					}
+			if( this.kbHandler.key(40) )
+			{
+				this.sprite.position.y+=7;
+				this.x = this.sprite.position.x;
+				this.y = this.sprite.position.y;
+			}
+			else if( this.kbHandler.key(38) )
+			{
+				this.sprite.position.y-=7;
+				this.x = this.sprite.position.x;
+				this.y = this.sprite.position.y;
+			}
+
+			if( this.kbHandler.key(39) )
+			{
+				if( this.sprite.scale.x != 5 )
+				{
+					this.sprite.scale.x = 5;
 				}
+				this.sprite.position.x+=7;
+				this.x = this.sprite.position.x;
+				this.y = this.sprite.position.y;
+				if( this.sprite.textures != this.anWalk )
+				{
+					this.sprite.textures = this.anWalk;
+				}
+				this.stateCounter = this.resetCounter;
+			} 
+			else if( this.kbHandler.key(37) )
+			{
+				if( this.sprite.scale.x != -5 )
+				{
+					this.sprite.scale.x = -5;
+				}
+				this.sprite.position.x-=7;
+				this.x = this.sprite.position.x;
+				this.y = this.sprite.position.y;
+				if( this.sprite.textures != this.anWalk )
+				{
+					this.sprite.textures = this.anWalk;
+				}
+				this.stateCounter = this.resetCounter;
 			}
 			else
 			{
-				this.stateCounter--;
-				if( this.sprite && this.sprite.textures != this.anStand )
+				if( this.stateCounter == 0 )
 				{
-					this.sprite.textures = this.anStand;
+					this.stateCounter = 0;
+					if( this.sprite && this.sprite.textures != this.anSit )
+					{
+						this.sprite.textures = this.anMidSit;
+						this.sprite.loop = false;
+
+						if( !this.sprite.playing )
+						{
+							this.sprite.textures = this.anSit;
+							this.sprite.loop = true;
+							this.sprite.play();
+						}
+					}
+				}
+				else
+				{
+					this.stateCounter--;
+					if( this.sprite && this.sprite.textures != this.anStand )
+					{
+						this.sprite.textures = this.anStand;
+					}
 				}
 			}
-		}
 
-/*		if(dist > 24 && this.sprite != undefined)
-		{
-			this.sprite.position.y+=5;
-			this.y = this.sprite.position.y;
-		}*/
+	/*		if(dist > 24 && this.sprite != undefined)
+			{
+				this.sprite.position.y+=5;
+				this.y = this.sprite.position.y;
+			}*/
+		}
 	};
 
 	addAnimation(frames:number[],base:string)
