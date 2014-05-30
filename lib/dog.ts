@@ -28,7 +28,7 @@ class Dog
 
 		this.kbHandler = kbHandler;
 
-		this.loader = new PIXI.AssetLoader(["../atlases/pixdog.json"]);
+		this.loader = new PIXI.AssetLoader(["dogts/atlases/pixdog.json"]);
 
 		this.loader.onComplete = this.onAtlasLoaded.bind(this);
 		this.loaded = false;

@@ -107,7 +107,7 @@ var Dog = (function () {
         this.resetCounter = 100;
         this.kbHandler = kbHandler;
         this.loader = new PIXI.AssetLoader([
-            "../atlases/pixdog.json"
+            "dogts/atlases/pixdog.json"
         ]);
         this.loader.onComplete = this.onAtlasLoaded.bind(this);
         this.loaded = false;
