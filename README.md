@@ -1,4 +1,4 @@
 dog
 ===
 
-A Dog game created in typescript with pixi.js
+Continuing on experimenting with pixi + typescript
